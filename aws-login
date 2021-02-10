@@ -1,9 +1,11 @@
 #!/bin/bash
 
+# Defaults to allow setting on the command line as in:
+# $ AWS_PROFILE=bob aws-login
 AWS_PROFILE=${AWS_PROFILE:="unset"}
-AWS_PATH=~/.aws
-AWS_SSO_JSON=$AWS_PATH/cli/cache/*.json
-AWS_CREDENTIALS_FILE=$AWS_PATH/credentials
+AWS_PATH=${AWS_PATH:=~/.aws}
+AWS_SSO_JSON=${AWS_SSO_JSON:=$AWS_PATH/cli/cache/*.json}
+AWS_CREDENTIALS_FILE=${AWS_CREDENTIALS_FILE:=$AWS_PATH/credentials}
 
 if [[ "$AWS_PROFILE" = "unset" ]] ; then
     read -p "Specify profile name: " AWS_PROFILE
