@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if ! jq --version &> /dev/null ; then
+    echo "Needs `jq`."
+    exit
+fi
+
+echo "Generating credentials file for $AWS_PROFILE"
+AWS_PATH=~/.aws
+AWS_SSO_JSON=$AWS_PATH/cli/cache/*.json
+AWS_CREDENTIALS_FILE=$AWS_PATH/credentials
+
+# Clear out any current credentials first
+rm -f $AWS_CREDENTIALS_FILE
+aws sso logout
+
+aws sso login --profile $AWS_PROFILE
+aws sts get-caller-identity --profile $AWS_PROFILE > /dev/null
+ACCESS_KEY=$(jq -j '.Credentials.AccessKeyId' $AWS_SSO_JSON)
+SECRET_KEY=$(jq -j '.Credentials.SecretAccessKey' $AWS_SSO_JSON)
+SESS_TOKEN=$(jq -j '.Credentials.SessionToken' $AWS_SSO_JSON)
+
+echo -e "[$AWS_PROFILE]
+aws_access_key_id=$ACCESS_KEY
+aws_secret_access_key=$SECRET_KEY
+aws_session_token=$SESS_TOKEN
+" > $AWS_CREDENTIALS_FILE
